@@ -36,7 +36,7 @@ const positions = [
     lookAt: new THREE.Vector3(0, 0, 0),
   },
   {
-    position: new THREE.Vector3(0, -240, 500),
+    position: new THREE.Vector3(0, -90, 500),
     lookAt: new THREE.Vector3(0, 0, 0),
   },
 ];
@@ -201,22 +201,12 @@ function easeInOutCubic(t) {
 
 function setupLighting() {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-  ambientLight.position.set(1, 1, 1);
+  ambientLight.position.set(0, 0, size * 2);
   scene.add(ambientLight);
 
   const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(1, 1, 1);
+  directionalLight.position.set(0, 0, size * 2);
   scene.add(directionalLight);
-
-  directionalLight.target = groupText;
-
-  const pointLight = new THREE.PointLight(0xffffff, 0.8);
-  pointLight.position.set(1, 1, 1);
-  scene.add(pointLight);
-
-  const rimLight = new THREE.PointLight(0x4466ff, 0.9);
-  rimLight.position.set(1, 1, 1);
-  scene.add(rimLight);
 }
 
 function onScroll() {
