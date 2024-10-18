@@ -25,20 +25,26 @@ section {
   color: white;
   display: flex;
   flex-direction: column;
+  gap: 4rem;
   justify-content: center;
   min-height: 100svh;
 
   &:nth-of-type(2) {
-    background: linear-gradient(
+    /* background: linear-gradient(
       0deg,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.5) 25%,
-      rgba(0, 0, 0, 0.5) 75%,
-      rgba(0, 0, 0, 0) 100%
-    );
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.5) 25%,
+      rgba(255, 255, 255, 0.5) 75%,
+      rgba(255, 255, 255, 0) 100%
+    ); */
     font-size: 2rem;
+
     > * {
+      color: transparent;
+      margin: 0;
       max-width: 60rem;
+      transform-origin: 0 0;
+      transform: skew(0, -5deg);
       width: 90%;
     }
   }
