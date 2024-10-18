@@ -17,7 +17,7 @@ body {
 }
 
 body {
-  background: black;
+  background: #232323;
 }
 
 section {
@@ -70,6 +70,8 @@ h2 {
 }
 
 #canvas-container {
+  background: #000;
+  /* transform: scale(0.5); */
   position: fixed;
   top: 0;
   left: 0;
