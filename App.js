@@ -52,7 +52,9 @@ export class App {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
 
     this.shaderUniforms = {
-      time: { value: 0 },
+      time: { value: 0.0 },
+      noiseTexture: { value: null }, // Set your noise texture here
+      blurAmount: { value: 4.5 }, // Adjust the blur amount as needed
     };
 
     this.positions = App.generatePositions("a(nother)machine");
@@ -126,8 +128,8 @@ export class App {
       const geometry = new TextGeometry(character, {
         font: font,
         size: size,
-        // depth: size * 0.4,
-        depth: size * 0,
+        depth: size * 0.4,
+        // depth: size * 0,
         curveSegments: 12,
         // bevelEnabled: true,
         bevelThickness: Math.ceil(size * 0.08),
@@ -146,16 +148,17 @@ export class App {
       }
       height = Math.max(height, charHeight);
 
-      // const material = new THREE.MeshStandardMaterial({
-      //   metalness: 0.4,
-      //   roughness: 0.7,
-      //   side: THREE.DoubleSide,
-      //   wireframe: false,
-      // });
+      const material = new THREE.MeshStandardMaterial({
+        metalness: 0.4,
+        roughness: 0.7,
+        side: THREE.DoubleSide,
+        wireframe: false,
+      });
 
       const mesh = new THREE.Mesh(
         geometry,
-        ShaderMaterials.noiseShaderMaterial(this.shaderUniforms)
+        material
+        // ShaderMaterials.blurryMaterial(this.shaderUniforms)
       );
 
       return mesh;
@@ -199,7 +202,7 @@ export class App {
   }
 
   setupLighting() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     ambientLight.position.set(0, 0, this.size * 2);
     this.scene.add(ambientLight);
 
@@ -346,6 +349,45 @@ export class App {
 }
 
 class ShaderMaterials {
+  static blurryMaterial(uniforms) {
+    return new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader: `
+        varying vec2 vUv;
+
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float time;
+        uniform sampler2D noiseTexture;
+        uniform float blurAmount; 
+        varying vec2 vUv;
+
+        void main() {
+          // Sample the noise texture to create a blurred effect
+          vec4 color = vec4(0.0);
+          vec2 uv = vUv;
+
+          // Apply a simple Gaussian blur
+          for (float x = -blurAmount; x <= blurAmount; x += 1.0) {
+            for (float y = -blurAmount; y <= blurAmount; y += 1.0) {
+              vec2 offset = vec2(x, y) / 100.0; // Change the denominator for more or less blur
+              color += texture2D(noiseTexture, uv + offset);
+            }
+          }
+
+          // Average the color samples
+          color /= (blurAmount * 2.0 + 1.0) * (blurAmount * 2.0 + 1.0);
+          gl_FragColor = vec4(color.rgb, 1.0); // Keep alpha at 1.0 or adjust as needed
+        }
+      `,
+      transparent: true, // Enables alpha blending
+    });
+  }
+
   static noiseShaderMaterial(uniforms) {
     return new THREE.ShaderMaterial({
       vertexShader: `
