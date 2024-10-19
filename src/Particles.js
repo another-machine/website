@@ -14,10 +14,10 @@ export class Particles {
     const height = this.canvas.height;
     const width = this.canvas.width;
     const fontSize = Math.min(height, width) * 0.15;
-    const density = (0.4 / 200) * fontSize;
+    const density = (0.2 / 200) * fontSize;
 
     this.context.clearRect(0, 0, width, height);
-    this.context.font = `italic bold ${fontSize}px Times New Roman`;
+    this.context.font = `${fontSize}px Times New Roman`;
     this.context.fillStyle = "rgba(255,255,255,1.0)";
     this.context.strokeStyle = "rgba(255,255,255,0.3)";
     this.context.lineWidth = fontSize * 0.07;
@@ -40,7 +40,7 @@ export class Particles {
       if (alpha) {
         const alphaGroup = alpha === 255 ? 0 : 1;
         this.groups.a[alphaGroup] = this.groups.a[alphaGroup] || [];
-        const densityFactor = alphaGroup ? density : density * 0.5;
+        const densityFactor = density;
         if (Math.random() < densityFactor) {
           this.groups.a[alphaGroup].push(
             new Particle({
@@ -64,9 +64,17 @@ export class Particles {
     const height = this.canvas.height * 1.5;
     const offsetX = this.canvas.width * -0.25;
     const offsetY = this.canvas.height * -0.25;
-    const other = (Math.abs(scrollY - 0.5) / 0.5) * 0.8 + 0.2;
+    const relativeProgress = Math.abs(scrollY - 0.5) / 0.5;
+    const strokeAlpha = 1 - (relativeProgress * 0.95 + 0.05);
+
+    this.context.lineWidth = Particle.radius * 0.4;
+
     this.groups.a.forEach((particles, i) => {
-      this.context.fillStyle = `rgba(255,255,255,${i ? 0.2 : other})`;
+      this.context.fillStyle = `rgba(255,255,255,${i ? 0.4 : 1})`;
+      this.context.strokeStyle = `rgba(255,255,255,${
+        (i ? 0.4 : 0.6) * strokeAlpha
+      })`;
+
       this.context.beginPath();
       particles.forEach((particle, j) => {
         const destination = this.groups.b[i][j];
@@ -80,7 +88,14 @@ export class Particles {
           offsetX,
           offsetY,
         });
-        particle.draw(this.context, destination);
+        particle.stroke(this.context, destination);
+      });
+      this.context.closePath();
+      this.context.stroke();
+
+      this.context.beginPath();
+      particles.forEach((particle, j) => {
+        particle.fill(this.context);
       });
       this.context.closePath();
       this.context.fill();

@@ -8,11 +8,13 @@
 
 :root {
   --font-size: 3rem;
+  --noise-filter: url(#noise-filter-small);
 }
 
 @media (min-width: 1024px) {
   :root {
     --font-size: 6rem;
+    --noise-filter: url(#noise-filter-large);
   }
 }
 
@@ -50,11 +52,11 @@ section {
     gap: calc(2 * var(--font-size));
     margin: 0;
     transform-origin: 0 0;
-    /* transform: skew(0, -5deg); */
-    filter: blur(0.6px);
+    /* filter: blur(0.4px) var(--noise-filter); */
     text-shadow: 0 0 0.2em rgba(0, 0, 0, 0.2);
     max-width: 80rem;
     width: 100%;
+
     > * {
       flex: 1;
       text-align: justify;

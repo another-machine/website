@@ -10,6 +10,29 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <svg width="0" height="0" style="position: absolute">
+      <defs>
+        <filter id="noise-filter-small">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.9"
+            numOctaves="3"
+            result="noise"
+          ></feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" />
+        </filter>
+        <filter id="noise-filter-large">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="1.8"
+            numOctaves="3"
+            result="noise"
+          ></feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" />
+        </filter>
+      </defs>
+    </svg>
+
     <canvas id="canvas-main"></canvas>
     <main id="scroll-container">
       <h1 style="display: none">a(nother) machine</h1>
@@ -22,7 +45,7 @@
           </p>
         </div>
         <div>
-          <p>At some point we forgot how simple the web can be.</p>
+          <p><em>At some point we forgot how simple the web can be.</em></p>
         </div>
         <div>
           <p>
@@ -90,9 +113,9 @@
 
         <div>
           <p>
-            We also love to use these tools to make compelling
+            We use these tools to make compelling
             <em>experiences</em>, free from cloud complexity, cheap to
-            distribute, free to use.
+            distribute, and free to use.
           </p>
         </div>
 
@@ -106,8 +129,7 @@
           </p>
           <p>
             Lexicon Standoff<br /><em
-              >A three plus player word game. Try to determine who is an
-              imposter and who is not.</em
+              >A party word game of hidden identities.</em
             >
           </p>
           <p>
@@ -116,7 +138,7 @@
           </p>
           <p>
             Sonic Pixels<br /><em
-              >A sound player, where digital images are the file format.</em
+              >A sound player using digital images as the file format.</em
             >
           </p>
         </div>
@@ -124,10 +146,10 @@
         <div>
           <p>
             <em>a(nother) machine</em>
-            is here to make tools that embrace limitation to make a more
-            expressive web. Our machines demonstrate alternative uses of web
+            is here to make tools that work within constraints to make a more
+            expressive web. Our experiences demonstrate alternative uses of web
             technology. Our hope is all of this makes you excited to build
-            similar things.
+            something similar.
           </p>
         </div>
       </section>

@@ -18,6 +18,8 @@ export class Particle {
   midpoint = Math.random() * 0.5 + 0.375;
 
   resistance = Math.random() * 10;
+  enableAttraction = Math.random() > 0.5;
+  enableLine = Math.random() > 0.8;
 
   constructor({ x, y, alpha, dimension }) {
     this.radiusBase = Math.random() * dimension * 0.1;
@@ -42,56 +44,70 @@ export class Particle {
     const progressNormal = Math.abs(progress - 0.5) / 0.5;
     const progressRelative = 1 - progressNormal;
     this.radius = (1 - progressNormal * 0.95) * this.radiusBase;
-
+    const dx = cursorX - this.x;
+    const dy = cursorY - this.y;
+    const distToCursor = Math.sqrt(dx * dx + dy * dy);
     const distance = Math.max(width, height);
     const offset = Math.min(offsetX, offsetY);
     const chaosX = this.foreignX * distance + offset;
     const chaosY = this.foreignY * distance + offset;
 
-    const attractionDistance = distance * 0.5 * progressRelative;
-    const attractionStrength = progressRelative * (1 - this.resistance);
-    const dx = cursorX - this.x;
-    const dy = cursorY - this.y;
-    const distToCursor = Math.sqrt(dx * dx + dy * dy);
+    const attraction = {};
 
-    const attractionInfluenceFactor = Math.max(
-      0,
-      Math.min(1, (attractionDistance - distToCursor) / attractionDistance)
-    );
+    if (this.enableAttraction) {
+      attraction.distance = distance * 0.5 * progressRelative;
+      attraction.strength = progressRelative * (1 - this.resistance);
+      attraction.influenceFactor = Math.max(
+        0,
+        Math.min(1, (attraction.distance - distToCursor) / attraction.distance)
+      );
 
-    const adjustedX =
-      this.x + dx * attractionStrength * attractionInfluenceFactor;
-    const adjustedY =
-      this.y + dy * attractionStrength * attractionInfluenceFactor;
-
-    // Setting the uninfluenced coordinates
-    if (progress <= this.midpoint) {
-      const factor = progress / this.midpoint;
-      this.x = (chaosX - this.initialX) * factor + this.initialX;
-      this.y = (chaosY - this.initialY) * factor + this.initialY;
-    } else {
-      const factor = (progress - this.midpoint) / (1 - this.midpoint);
-      this.x = (destination.initialX - chaosX) * factor + chaosX;
-      this.y = (destination.initialY - chaosY) * factor + chaosY;
+      attraction.x =
+        this.x + dx * attraction.strength * attraction.influenceFactor;
+      attraction.y =
+        this.y + dy * attraction.strength * attraction.influenceFactor;
     }
 
     // Setting influenced coordinates
-    if (attractionInfluenceFactor) {
+    if (attraction && attraction.influenceFactor) {
       this.x =
-        (1 - attractionInfluenceFactor) * this.x +
-        attractionInfluenceFactor * adjustedX;
+        (1 - attraction.influenceFactor) * this.x +
+        attraction.influenceFactor * attraction.x;
       this.y =
-        (1 - attractionInfluenceFactor) * this.y +
-        attractionInfluenceFactor * adjustedY;
+        (1 - attraction.influenceFactor) * this.y +
+        attraction.influenceFactor * attraction.y;
+    } // Setting the uninfluenced coordinates
+    else {
+      // 0 - ~50%
+      if (progress <= this.midpoint) {
+        const factor = progress / this.midpoint;
+        this.x = (chaosX - this.initialX) * factor + this.initialX;
+        this.y = (chaosY - this.initialY) * factor + this.initialY;
+      }
+      // ~50% - 100%
+      else {
+        const factor = (progress - this.midpoint) / (1 - this.midpoint);
+        this.x = (destination.initialX - chaosX) * factor + chaosX;
+        this.y = (destination.initialY - chaosY) * factor + chaosY;
+      }
     }
   }
 
-  draw(context, destination) {
+  fill(context) {
     const dx = Math.sin(this.angle * this.rotateSpeed) * this.radius;
     const dy = Math.cos(this.angle * this.rotateSpeed) * this.radius;
     context.moveTo(this.x + dx, this.y + dy);
-    // context.lineTo(destination.x, destination.y);
     context.arc(this.x + dx, this.y + dy, Particle.radius, 0, Particle.PI2);
     this.angle += this.angleIncrement;
+  }
+
+  stroke(context, destination) {
+    if (!this.enableLine) {
+      return;
+    }
+    const dx = Math.sin(this.angle * this.rotateSpeed) * this.radius;
+    const dy = Math.cos(this.angle * this.rotateSpeed) * this.radius;
+    context.moveTo(this.x + dx, this.y + dy);
+    context.lineTo(destination.x, destination.y);
   }
 }
