@@ -14,7 +14,7 @@ export class Particles {
     const height = this.canvas.height;
     const width = this.canvas.width;
     const fontSize = Math.min(height, width) * 0.15;
-    const density = (0.2 / 200) * fontSize;
+    const density = Math.max((0.2 / 200) * fontSize, 0.2);
 
     this.context.clearRect(0, 0, width, height);
     this.context.font = `${fontSize}px Times New Roman`;
@@ -67,12 +67,12 @@ export class Particles {
     const relativeProgress = Math.abs(scrollY - 0.5) / 0.5;
     const strokeAlpha = 1 - (relativeProgress * 0.95 + 0.05);
 
-    this.context.lineWidth = Particle.radius * 0.4;
+    this.context.lineWidth = Particle.radius * 0.2;
 
     this.groups.a.forEach((particles, i) => {
-      this.context.fillStyle = `rgba(255,255,255,${i ? 0.4 : 1})`;
+      this.context.fillStyle = `rgba(255,255,255,${i ? 0.6 : 1})`;
       this.context.strokeStyle = `rgba(255,255,255,${
-        (i ? 0.4 : 0.6) * strokeAlpha
+        (i ? 0.6 : 1) * strokeAlpha
       })`;
 
       this.context.beginPath();
@@ -88,14 +88,19 @@ export class Particles {
           offsetX,
           offsetY,
         });
-        particle.stroke(this.context, destination);
+        particle.stroke({
+          context: this.context,
+          destination,
+          cursorX,
+          cursorY,
+        });
       });
       this.context.closePath();
       this.context.stroke();
 
       this.context.beginPath();
       particles.forEach((particle, j) => {
-        particle.fill(this.context);
+        particle.fill({ context: this.context });
       });
       this.context.closePath();
       this.context.fill();

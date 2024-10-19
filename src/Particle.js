@@ -18,8 +18,7 @@ export class Particle {
   midpoint = Math.random() * 0.5 + 0.375;
 
   resistance = Math.random() * 10;
-  enableAttraction = Math.random() > 0.5;
-  enableLine = Math.random() > 0.8;
+  enableLine = Math.random() > 0.9;
 
   constructor({ x, y, alpha, dimension }) {
     this.radiusBase = Math.random() * dimension * 0.1;
@@ -41,59 +40,31 @@ export class Particle {
     offsetX,
     offsetY,
   }) {
-    const progressNormal = Math.abs(progress - 0.5) / 0.5;
-    const progressRelative = 1 - progressNormal;
+    const progressNormal = (Math.abs(progress - 0.5) / 0.5) * 0.9999 + 0.0001;
     this.radius = (1 - progressNormal * 0.95) * this.radiusBase;
-    const dx = cursorX - this.x;
-    const dy = cursorY - this.y;
-    const distToCursor = Math.sqrt(dx * dx + dy * dy);
+
     const distance = Math.max(width, height);
     const offset = Math.min(offsetX, offsetY);
     const chaosX = this.foreignX * distance + offset;
     const chaosY = this.foreignY * distance + offset;
 
-    const attraction = {};
+    // set control points
 
-    if (this.enableAttraction) {
-      attraction.distance = distance * 0.5 * progressRelative;
-      attraction.strength = progressRelative * (1 - this.resistance);
-      attraction.influenceFactor = Math.max(
-        0,
-        Math.min(1, (attraction.distance - distToCursor) / attraction.distance)
-      );
-
-      attraction.x =
-        this.x + dx * attraction.strength * attraction.influenceFactor;
-      attraction.y =
-        this.y + dy * attraction.strength * attraction.influenceFactor;
+    // 0 - ~50% (before midpoint)
+    if (progress <= this.midpoint) {
+      const factor = progress / this.midpoint;
+      this.x = (chaosX - this.initialX) * factor + this.initialX;
+      this.y = (chaosY - this.initialY) * factor + this.initialY;
     }
-
-    // Setting influenced coordinates
-    if (attraction && attraction.influenceFactor) {
-      this.x =
-        (1 - attraction.influenceFactor) * this.x +
-        attraction.influenceFactor * attraction.x;
-      this.y =
-        (1 - attraction.influenceFactor) * this.y +
-        attraction.influenceFactor * attraction.y;
-    } // Setting the uninfluenced coordinates
+    // ~50% - 100% (after midpoint)
     else {
-      // 0 - ~50%
-      if (progress <= this.midpoint) {
-        const factor = progress / this.midpoint;
-        this.x = (chaosX - this.initialX) * factor + this.initialX;
-        this.y = (chaosY - this.initialY) * factor + this.initialY;
-      }
-      // ~50% - 100%
-      else {
-        const factor = (progress - this.midpoint) / (1 - this.midpoint);
-        this.x = (destination.initialX - chaosX) * factor + chaosX;
-        this.y = (destination.initialY - chaosY) * factor + chaosY;
-      }
+      const factor = (progress - this.midpoint) / (1 - this.midpoint);
+      this.x = (destination.initialX - chaosX) * factor + chaosX;
+      this.y = (destination.initialY - chaosY) * factor + chaosY;
     }
   }
 
-  fill(context) {
+  fill({ context }) {
     const dx = Math.sin(this.angle * this.rotateSpeed) * this.radius;
     const dy = Math.cos(this.angle * this.rotateSpeed) * this.radius;
     context.moveTo(this.x + dx, this.y + dy);
@@ -101,7 +72,38 @@ export class Particle {
     this.angle += this.angleIncrement;
   }
 
-  stroke(context, destination) {
+  stroke({ context, destination, cursorX, cursorY }) {
+    if (!this.enableLine) {
+      return;
+    }
+
+    const dx = Math.sin(this.angle * this.rotateSpeed) * this.radius;
+    const dy = Math.cos(this.angle * this.rotateSpeed) * this.radius;
+
+    const startX = this.x + dx;
+    const startY = this.y + dy;
+    const endX = destination.x;
+    const endY = destination.y;
+
+    // Calculate the midpoint
+    const midX = (startX + endX) / 2;
+    const midY = (startY + endY) / 2;
+
+    // Calculate the distance from the midpoint to the cursor
+    const distToCursor = Math.sqrt(
+      (cursorX - midX) ** 2 + (cursorY - midY) ** 2
+    );
+
+    // Determine the control point based on distance to the cursor
+    const curveAmount = Math.min(1, Math.max(0, distToCursor / 200)); // Adjust the divisor for sensitivity
+    const controlX = midX + (cursorX - midX) * curveAmount * 0.5; // Scale the influence
+    const controlY = midY + (cursorY - midY) * curveAmount * 0.5; // Scale the influence
+
+    context.moveTo(startX, startY);
+    context.quadraticCurveTo(controlX, controlY, endX, endY);
+  }
+
+  stroke2({ context, destination }) {
     if (!this.enableLine) {
       return;
     }

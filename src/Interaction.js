@@ -1,6 +1,6 @@
 export class Interaction {
-  cursorX = -Infinity;
-  cursorY = -Infinity;
+  cursorX = window.innerWidth / 2;
+  cursorY = window.innerHeight / 2;
   scrollY = 0;
   scrollEase = 2;
 
