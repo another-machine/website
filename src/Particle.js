@@ -17,7 +17,7 @@ export class Particle {
 
   midpoint = Math.random() * 0.5 + 0.375;
 
-  resistance = Math.random();
+  resistance = Math.random() * 10;
 
   constructor({ x, y, alpha, dimension }) {
     this.radiusBase = Math.random() * dimension * 0.1;
@@ -48,8 +48,8 @@ export class Particle {
     const chaosX = this.foreignX * distance + offset;
     const chaosY = this.foreignY * distance + offset;
 
-    const attractionDistance = distance * (progressRelative * 10);
-    const attractionStrength = 0.8 * progressRelative * (1 - this.resistance);
+    const attractionDistance = distance * 0.5 * progressRelative;
+    const attractionStrength = progressRelative * (1 - this.resistance);
     const dx = cursorX - this.x;
     const dy = cursorY - this.y;
     const distToCursor = Math.sqrt(dx * dx + dy * dy);
@@ -86,10 +86,11 @@ export class Particle {
     }
   }
 
-  draw(context) {
+  draw(context, destination) {
     const dx = Math.sin(this.angle * this.rotateSpeed) * this.radius;
     const dy = Math.cos(this.angle * this.rotateSpeed) * this.radius;
     context.moveTo(this.x + dx, this.y + dy);
+    // context.lineTo(destination.x, destination.y);
     context.arc(this.x + dx, this.y + dy, Particle.radius, 0, Particle.PI2);
     this.angle += this.angleIncrement;
   }

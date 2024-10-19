@@ -3,12 +3,10 @@ import { Particles } from "./src/Particles.js";
 
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
 
 const particles = new Particles({ canvas, context });
 particles.setup();
-const interaction = new Interaction();
+const interaction = new Interaction({ onResize: () => particles.setup() });
 
 animate();
 

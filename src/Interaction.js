@@ -1,21 +1,36 @@
 export class Interaction {
-  cursorX = 0;
-  cursorY = 0;
+  cursorX = window.innerWidth * 0.5;
+  cursorY = window.innerHeight * 0.5;
   scrollY = 0;
   scrollEase = 3;
 
-  constructor() {
-    window.addEventListener("scroll", this.updateScrollPosition.bind(this));
-    window.addEventListener("mousemove", this.updateCursorPosition.bind(this));
-    window.addEventListener("touchmove", this.updateCursorPosition.bind(this));
-    this.updateScrollPosition();
+  constructor(props = {}) {
+    this._onResize = props.onResize;
+    window.addEventListener("resize", this.onResize.bind(this));
+    window.addEventListener("scroll", this.onScroll.bind(this));
+    window.addEventListener("mousemove", this.onCursor.bind(this));
+    window.addEventListener("touchmove", this.onCursor.bind(this));
+    this.onScroll();
   }
 
-  updateCursorPosition({ clientX, clientY }) {
+  onCursor({ clientX, clientY }) {
     this.cursorX = clientX;
     this.cursorY = clientY;
   }
-  updateScrollPosition() {
+
+  onResize() {
+    if (!this._onResize) {
+      return;
+    }
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
+    this.resizeTimeout = setTimeout(() => {
+      this._onResize();
+    }, 400);
+  }
+
+  onScroll() {
     const documentHeight = document.documentElement.scrollHeight;
     const windowHeight = window.innerHeight;
     const rawScrollPosition =
