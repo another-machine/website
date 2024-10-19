@@ -34,6 +34,8 @@ export class Particles {
       this.context.getImageData(0, 0, width, height).data.buffer
     );
     const dimension = Math.min(width, height);
+    const centerX = width / 2;
+    const centerY = height / 2;
 
     for (let i = 0; i < data32.length; i++) {
       const alpha = (data32[i] >> 24) & 0xff;
@@ -46,6 +48,8 @@ export class Particles {
             new Particle({
               x: i % width,
               y: (i / width) | 0,
+              centerX,
+              centerY,
               alpha,
               dimension,
             })
@@ -60,21 +64,18 @@ export class Particles {
   }
 
   render({ cursorX, cursorY, scrollY }) {
-    const width = this.canvas.width * 1.5;
-    const height = this.canvas.height * 1.5;
-    const offsetX = this.canvas.width * -0.25;
-    const offsetY = this.canvas.height * -0.25;
+    const width = this.canvas.width * 1;
+    const height = this.canvas.height * 1;
+    const offsetX = this.canvas.width * 0;
+    const offsetY = this.canvas.height * 0;
     const relativeProgress = Math.abs(scrollY - 0.5) / 0.5;
-    const strokeAlpha = 1 - (relativeProgress * 0.95 + 0.05);
+    const size = Particle.radiusForProgress(scrollY);
+    const cursorRadius = Math.min(width, height) * 0.5;
 
-    this.context.lineWidth = Particle.radius * 0.2;
+    this.context.lineWidth = Particle.dotRadiusMin * 0.01;
 
     this.groups.a.forEach((particles, i) => {
       this.context.fillStyle = `rgba(255,255,255,${i ? 0.6 : 1})`;
-      this.context.strokeStyle = `rgba(255,255,255,${
-        (i ? 0.6 : 1) * strokeAlpha
-      })`;
-
       this.context.beginPath();
       particles.forEach((particle, j) => {
         const destination = this.groups.b[i][j];
@@ -82,23 +83,14 @@ export class Particles {
           progress: scrollY,
           cursorX,
           cursorY,
+          cursorRadius,
           destination,
           width,
           height,
           offsetX,
           offsetY,
         });
-        particle.stroke({
-          context: this.context,
-          destination,
-        });
-      });
-      this.context.closePath();
-      this.context.stroke();
-
-      this.context.beginPath();
-      particles.forEach((particle, j) => {
-        particle.fill({ context: this.context });
+        particle.fill({ context: this.context, size });
       });
       this.context.closePath();
       this.context.fill();

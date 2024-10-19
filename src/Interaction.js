@@ -3,6 +3,7 @@ export class Interaction {
   cursorY = window.innerHeight / 2;
   scrollY = 0;
   scrollEase = 2;
+  cursorEase = 0.1;
 
   constructor(props = {}) {
     this._onClick = props.onClick;
@@ -23,8 +24,8 @@ export class Interaction {
   }
 
   onCursor({ clientX, clientY }) {
-    this.cursorX = clientX;
-    this.cursorY = clientY;
+    this.cursorX += (clientX - this.cursorX) * this.cursorEase;
+    this.cursorY += (clientY - this.cursorY) * this.cursorEase;
   }
 
   onResize() {
