@@ -13,7 +13,7 @@
 
 @media (min-width: 1024px) {
   :root {
-    --font-size: 6rem;
+    --font-size: 5rem;
     --noise-filter: url(#noise-filter-large);
   }
 }
@@ -45,20 +45,19 @@ section {
 
   > * {
     align-items: center;
-    color: white;
+    color: yellow;
     display: flex;
     flex-direction: column;
     font-size: var(--font-size);
     gap: calc(2 * var(--font-size));
     margin: 0;
     transform-origin: 0 0;
-    /* filter: blur(0.4px) var(--noise-filter); */
-    text-shadow: 0 0 0.2em rgba(0, 0, 0, 0.2);
-    max-width: 80rem;
+    max-width: 70rem;
     width: 100%;
 
     > * {
       flex: 1;
+      filter: var(--noise-filter);
       text-align: justify;
       text-align-last: center;
     }
@@ -86,13 +85,11 @@ h2 {
 }
 
 canvas {
-  position: fixed;
   inset: 0;
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
 }
 #canvas-main {
   background: #000;
-  z-index: 0;
-}
-#canvas-noise {
-  z-index: 9;
 }

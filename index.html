@@ -16,7 +16,7 @@
           <feTurbulence
             type="fractalNoise"
             baseFrequency="0.9"
-            numOctaves="3"
+            numOctaves="2"
             result="noise"
           ></feTurbulence>
           <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" />
@@ -24,16 +24,17 @@
         <filter id="noise-filter-large">
           <feTurbulence
             type="fractalNoise"
-            baseFrequency="1.8"
-            numOctaves="3"
+            baseFrequency="1.0"
+            numOctaves="2"
             result="noise"
           ></feTurbulence>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" />
         </filter>
       </defs>
     </svg>
 
     <canvas id="canvas-main"></canvas>
+    <canvas id="canvas-noise"></canvas>
     <main id="scroll-container">
       <h1 style="display: none">a(nother) machine</h1>
       <section>
@@ -55,32 +56,32 @@
         </div>
         <div>
           <p>
-            In other moments, our heads tipped back, yearning for something
-            better than what people told us the web had to be.
+            In other moments, as we fail captchas, disable ad blockers, cancel
+            location access, agree to cookie policies, and frantically close
+            scroll locking popups...
           </p>
         </div>
         <div>
           <p>
-            We fail captchas, install ad blockers, block location access
-            requests, agree to cookie policies, and frantically close scroll
-            locking popups.
+            ...we yearn for something better than what people told us the web
+            had to be.
           </p>
         </div>
         <div>
           <p>
-            Many <em>experiences</em> and the <em>tools</em> that build them
-            exist to further this abrasive form of the web.
+            Many <em>experiences</em> that exist perpetuate an abrasive form of
+            the web.
           </p>
         </div>
         <div>
           <p>
-            We make <em>experiences</em> and <em>tools</em> to build them with
-            an expressive web in mind.
+            We make <em>experiences</em> and <em>tools</em> with an expressive
+            web in mind.
           </p>
         </div>
         <div>
           <p>
-            We distribute our tools via the
+            Our tools are distributed via the
             <em>Another Machine Public Library</em>.
           </p>
         </div>
@@ -154,7 +155,6 @@
         </div>
       </section>
     </main>
-    <canvas id="canvas-noise"></canvas>
 
     <script type="module" src="script.js"></script>
   </body>

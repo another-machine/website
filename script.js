@@ -30,7 +30,7 @@ function animate() {
   requestAnimationFrame(animate);
   context.clearRect(0, 0, canvas.width, canvas.height);
   particles.render(interaction);
-  addGrainNoise(noiseCanvas, noiseContext, 0.3);
+  addGrainNoise(noiseCanvas, noiseContext, 0.35);
 }
 
 function addGrainNoise(canvas, context, intensity = 0.1) {

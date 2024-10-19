@@ -9,6 +9,11 @@ export class Particle {
   baseX = 0;
   baseY = 0;
 
+  controlX = [0, 0];
+  controlY = [0, 0];
+
+  enableLine = Math.random() > 0.9;
+
   foreignX = Math.random();
   foreignY = Math.random();
 
@@ -16,9 +21,6 @@ export class Particle {
   rotateSpeed = Math.random() * 0.05 * 2;
 
   midpoint = Math.random() * 0.5 + 0.375;
-
-  resistance = Math.random() * 10;
-  enableLine = Math.random() > 0.9;
 
   constructor({ x, y, alpha, dimension }) {
     this.radiusBase = Math.random() * dimension * 0.1;
@@ -48,8 +50,6 @@ export class Particle {
     const chaosX = this.foreignX * distance + offset;
     const chaosY = this.foreignY * distance + offset;
 
-    // set control points
-
     // 0 - ~50% (before midpoint)
     if (progress <= this.midpoint) {
       const factor = progress / this.midpoint;
@@ -62,6 +62,28 @@ export class Particle {
       this.x = (destination.initialX - chaosX) * factor + chaosX;
       this.y = (destination.initialY - chaosY) * factor + chaosY;
     }
+
+    // The curve control point used in stroke
+    const startX = this.x;
+    const startY = this.y;
+    const endX = destination.x;
+    const endY = destination.y;
+    const midX = (startX + endX) / 2;
+    const midY = (startY + endY) / 2;
+
+    const distToCursor = Math.sqrt(
+      (cursorX - midX) ** 2 + (cursorY - midY) ** 2
+    );
+
+    const curveAmount = Math.min(1, Math.max(0, distToCursor / 200));
+    this.controlX = [
+      midX + (cursorX - midX) * curveAmount * 0.25,
+      midX + (cursorX - midX) * curveAmount * 0.75,
+    ];
+    this.controlY = [
+      midY + (cursorY - midY) * curveAmount * 0.25,
+      midY + (cursorY - midY) * curveAmount * 0.75,
+    ];
   }
 
   fill({ context }) {
@@ -72,7 +94,7 @@ export class Particle {
     this.angle += this.angleIncrement;
   }
 
-  stroke({ context, destination, cursorX, cursorY }) {
+  stroke({ context, destination }) {
     if (!this.enableLine) {
       return;
     }
@@ -85,31 +107,14 @@ export class Particle {
     const endX = destination.x;
     const endY = destination.y;
 
-    // Calculate the midpoint
-    const midX = (startX + endX) / 2;
-    const midY = (startY + endY) / 2;
-
-    // Calculate the distance from the midpoint to the cursor
-    const distToCursor = Math.sqrt(
-      (cursorX - midX) ** 2 + (cursorY - midY) ** 2
-    );
-
-    // Determine the control point based on distance to the cursor
-    const curveAmount = Math.min(1, Math.max(0, distToCursor / 200)); // Adjust the divisor for sensitivity
-    const controlX = midX + (cursorX - midX) * curveAmount * 0.5; // Scale the influence
-    const controlY = midY + (cursorY - midY) * curveAmount * 0.5; // Scale the influence
-
     context.moveTo(startX, startY);
-    context.quadraticCurveTo(controlX, controlY, endX, endY);
-  }
-
-  stroke2({ context, destination }) {
-    if (!this.enableLine) {
-      return;
-    }
-    const dx = Math.sin(this.angle * this.rotateSpeed) * this.radius;
-    const dy = Math.cos(this.angle * this.rotateSpeed) * this.radius;
-    context.moveTo(this.x + dx, this.y + dy);
-    context.lineTo(destination.x, destination.y);
+    context.bezierCurveTo(
+      this.controlX[0],
+      this.controlY[0],
+      this.controlX[1],
+      this.controlY[1],
+      endX,
+      endY
+    );
   }
 }

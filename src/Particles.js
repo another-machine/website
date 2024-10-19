@@ -91,8 +91,6 @@ export class Particles {
         particle.stroke({
           context: this.context,
           destination,
-          cursorX,
-          cursorY,
         });
       });
       this.context.closePath();
