@@ -1,8 +1,8 @@
 export class Interaction {
-  cursorX = window.innerWidth * 0.5;
-  cursorY = window.innerHeight * 0.5;
+  cursorX = -Infinity;
+  cursorY = -Infinity;
   scrollY = 0;
-  scrollEase = 3;
+  scrollEase = 2;
 
   constructor(props = {}) {
     this._onResize = props.onResize;
@@ -27,7 +27,7 @@ export class Interaction {
     }
     this.resizeTimeout = setTimeout(() => {
       this._onResize();
-    }, 400);
+    }, 200);
   }
 
   onScroll() {

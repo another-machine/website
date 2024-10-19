@@ -1,29 +1,43 @@
 import { Interaction } from "./src/Interaction.js";
 import { Particles } from "./src/Particles.js";
 
-const canvas = document.querySelector("canvas");
+const canvas = document.getElementById("canvas-main");
 const context = canvas.getContext("2d");
+const noiseCanvas = document.getElementById("canvas-noise");
+const noiseContext = noiseCanvas.getContext("2d");
+
+resizeCanvases();
 
 const particles = new Particles({ canvas, context });
 particles.setup();
-const interaction = new Interaction({ onResize: () => particles.setup() });
+const interaction = new Interaction({
+  onResize: () => {
+    resizeCanvases();
+    particles.setup();
+  },
+});
+
+function resizeCanvases() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  noiseCanvas.width = window.innerWidth;
+  noiseCanvas.height = window.innerHeight;
+}
 
 animate();
 
 function animate() {
   requestAnimationFrame(animate);
-
   context.clearRect(0, 0, canvas.width, canvas.height);
   particles.render(interaction);
-  addGrainNoise(context, canvas, 0.3);
+  addGrainNoise(noiseCanvas, noiseContext, 0.3);
 }
 
-function addGrainNoise(context, canvas, intensity = 0.1) {
+function addGrainNoise(canvas, context, intensity = 0.1) {
   const noiseCanvas = document.createElement("canvas");
   noiseCanvas.width = canvas.width;
   noiseCanvas.height = canvas.height;
   const noiseContext = noiseCanvas.getContext("2d");
-
   const imageData = noiseContext.createImageData(
     noiseCanvas.width,
     noiseCanvas.height
@@ -35,6 +49,7 @@ function addGrainNoise(context, canvas, intensity = 0.1) {
     data[i] = data[i + 1] = data[i + 2] = grayscale;
     data[i + 3] = intensity * 255;
   }
+  context.clearRect(0, 0, canvas.width, canvas.height);
   noiseContext.putImageData(imageData, 0, 0);
   context.globalAlpha = intensity;
   context.drawImage(noiseCanvas, 0, 0);

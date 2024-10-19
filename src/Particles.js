@@ -11,15 +11,13 @@ export class Particles {
   setup() {
     this.groups.a.splice(0, this.groups.a.length);
     this.groups.b.splice(0, this.groups.b.length);
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
     const height = this.canvas.height;
     const width = this.canvas.width;
     const fontSize = Math.min(height, width) * 0.15;
-    const density = (0.5 / 200) * fontSize;
+    const density = (0.4 / 200) * fontSize;
 
     this.context.clearRect(0, 0, width, height);
-    this.context.font = `${fontSize}px Arial Black`;
+    this.context.font = `900 ${fontSize}px Times New Roman`;
     this.context.fillStyle = "rgba(255,255,255,1.0)";
     this.context.strokeStyle = "rgba(255,255,255,0.3)";
     this.context.lineWidth = fontSize * 0.07;
