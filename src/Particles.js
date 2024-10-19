@@ -17,7 +17,7 @@ export class Particles {
     const density = (0.4 / 200) * fontSize;
 
     this.context.clearRect(0, 0, width, height);
-    this.context.font = `900 ${fontSize}px Times New Roman`;
+    this.context.font = `italic bold ${fontSize}px Times New Roman`;
     this.context.fillStyle = "rgba(255,255,255,1.0)";
     this.context.strokeStyle = "rgba(255,255,255,0.3)";
     this.context.lineWidth = fontSize * 0.07;

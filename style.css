@@ -6,6 +6,16 @@
   font-stretch: 75% 125%;
 }
 
+:root {
+  --font-size: 3rem;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --font-size: 6rem;
+  }
+}
+
 html {
   font-family: "Mona Sans";
   font-family: "Times New Roman", Times, serif;
@@ -28,16 +38,16 @@ section {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 120svh;
+  gap: 60svh;
   padding: 120svh 1rem;
 
   > * {
     align-items: center;
     color: white;
     display: flex;
-    justify-content: space-between;
-    font-size: 6rem;
-    gap: 3rem;
+    flex-direction: column;
+    font-size: var(--font-size);
+    gap: calc(2 * var(--font-size));
     margin: 0;
     transform-origin: 0 0;
     /* transform: skew(0, -5deg); */
