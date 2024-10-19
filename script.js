@@ -1,4 +1,5 @@
 import { Interaction } from "./src/Interaction.js";
+import { Oscillators } from "./src/Oscillators.js";
 import { Particles } from "./src/Particles.js";
 
 const canvas = document.getElementById("canvas-main");
@@ -8,12 +9,16 @@ const noiseContext = noiseCanvas.getContext("2d");
 
 resizeCanvases();
 
+const oscillators = new Oscillators();
 const particles = new Particles({ canvas, context });
 particles.setup();
 const interaction = new Interaction({
   onResize: () => {
     resizeCanvases();
     particles.setup();
+  },
+  onClick: () => {
+    oscillators.initialize();
   },
 });
 
@@ -30,6 +35,7 @@ function animate() {
   requestAnimationFrame(animate);
   context.clearRect(0, 0, canvas.width, canvas.height);
   particles.render(interaction);
+  oscillators.evolve(interaction);
   addGrainNoise(noiseCanvas, noiseContext, 0.35);
 }
 

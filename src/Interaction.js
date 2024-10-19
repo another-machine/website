@@ -5,12 +5,21 @@ export class Interaction {
   scrollEase = 2;
 
   constructor(props = {}) {
+    this._onClick = props.onClick;
     this._onResize = props.onResize;
+    window.addEventListener("click", this.onClick.bind(this));
     window.addEventListener("resize", this.onResize.bind(this));
     window.addEventListener("scroll", this.onScroll.bind(this));
     window.addEventListener("mousemove", this.onCursor.bind(this));
     window.addEventListener("touchmove", this.onCursor.bind(this));
     this.onScroll();
+  }
+
+  onClick() {
+    if (!this._onClick) {
+      return;
+    }
+    this._onClick();
   }
 
   onCursor({ clientX, clientY }) {
