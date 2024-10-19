@@ -3,8 +3,8 @@ const FREQUENCIES_A = [
   622.25, 739.99, 830.61, 1046.5, 1244.51, 1479.98,
 ];
 const FREQUENCIES_B = [
-  61.74, 77.78, 92.5, 110.0, 123.47, 155.56, 185.0, 220.0, 246.94, 311.13,
-  369.99, 440.0, 493.88, 622.25, 739.99, 880.0,
+  123.48, 155.56, 185.0, 220.0, 246.94, 311.12, 370.0, 440.0, 493.88, 622.26,
+  739.98, 880.0, 987.76, 1244.5, 1479.98, 1760.0,
 ];
 const FREQUENCIES_C = [
   69.3, 87.31, 103.83, 138.59, 174.61, 207.65, 277.18, 349.23, 415.3, 554.37,
@@ -78,12 +78,6 @@ export class Oscillator {
   }
 
   evolve(progress) {
-    // const frequency =
-    //   progress <= 0.5
-    //     ? (this.frequencyB - this.frequencyA) * (progress / 0.5) +
-    //       this.frequencyA
-    //     : (this.frequencyC - this.frequencyB) * ((progress - 0.5) / 0.5) +
-    //       this.frequencyB;
     const frequency =
       (this.frequencyC - this.frequencyA) * progress + this.frequencyA;
 
@@ -91,19 +85,5 @@ export class Oscillator {
       frequency * this.frequencyOff,
       this.context.currentTime + 0.2
     );
-
-    // if (Math.random() > this.chance) {
-    //   if (this.gainNode.gain.value === 0) {
-    //     this.gainNode.gain.linearRampToValueAtTime(
-    //       this.volume,
-    //       this.context.currentTime + 0.1
-    //     );
-    //   } else {
-    //     this.gainNode.gain.linearRampToValueAtTime(
-    //       0,
-    //       this.context.currentTime + 0.1
-    //     );
-    //   }
-    // }
   }
 }
