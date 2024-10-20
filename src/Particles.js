@@ -2,6 +2,7 @@ import { Particle } from "./Particle.js";
 
 export class Particles {
   groups = { a: [], b: [] };
+  particlesStore = {};
 
   constructor({ canvas, context }) {
     this.canvas = canvas;
@@ -11,52 +12,11 @@ export class Particles {
   setup() {
     this.groups.a.splice(0, this.groups.a.length);
     this.groups.b.splice(0, this.groups.b.length);
-    const height = this.canvas.height;
-    const width = this.canvas.width;
-    const fontSize = Math.min(height, width) * 0.15;
-    const density = Math.max((0.2 / 200) * fontSize, 0.25);
 
-    this.context.clearRect(0, 0, width, height);
-    this.context.font = `${fontSize}px Times New Roman`;
-    this.context.fillStyle = "rgba(255,255,255,1.0)";
-    this.context.strokeStyle = "rgba(255,255,255,0.3)";
-    this.context.lineWidth = fontSize * 0.07;
-    this.context.textBaseline = "middle";
-    this.context.textAlign = "center";
-    const line1 = { x: width * 0.5, y: height * 0.5 - fontSize / 2 };
-    const line2 = { x: width * 0.5, y: height * 0.5 + fontSize / 2 };
-    this.context.fillText("a(nother)", line1.x, line1.y);
-    this.context.strokeText("a(nother)", line1.x, line1.y);
-    this.context.fillText("machine", line2.x, line2.y);
-    this.context.strokeText("machine", line2.x, line2.y);
+    const particles = this.particlesForText(["a(nother)", "machine"]);
+    Particles.shuffle(particles);
+    this.groups.a.push(...particles);
 
-    const data32 = new Uint32Array(
-      this.context.getImageData(0, 0, width, height).data.buffer
-    );
-    const dimension = Math.min(width, height);
-    const centerX = width / 2;
-    const centerY = height / 2;
-
-    for (let i = 0; i < data32.length; i++) {
-      const alpha = (data32[i] >> 24) & 0xff;
-      if (alpha) {
-        const alphaGroup = alpha === 255 ? 0 : 1;
-        this.groups.a[alphaGroup] = this.groups.a[alphaGroup] || [];
-        const densityFactor = density;
-        if (Math.random() < densityFactor) {
-          this.groups.a[alphaGroup].push(
-            new Particle({
-              x: i % width,
-              y: (i / width) | 0,
-              centerX,
-              centerY,
-              alpha,
-              dimension,
-            })
-          );
-        }
-      }
-    }
     this.groups.a.forEach((a, i) => {
       this.groups.b[i] = [...a];
       Particles.shuffle(this.groups.b[i]);
@@ -93,6 +53,68 @@ export class Particles {
       this.context.closePath();
       this.context.fill();
     });
+  }
+
+  particlesForText(lines) {
+    const key = [...lines, this.canvas.width, this.canvas.height].join("-");
+    if (this.particlesStore[key]) {
+      return this.particlesStore[key];
+    }
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    const particles = [];
+    const height = this.canvas.height;
+    const width = this.canvas.width;
+    const fontSize = Math.min(height, width) * 0.15;
+    const density = Math.max((0.2 / 200) * fontSize, 0.25);
+
+    canvas.width = width;
+    canvas.height = height;
+    context.clearRect(0, 0, width, height);
+    context.font = `${fontSize}px Times New Roman`;
+    context.fillStyle = "rgba(255, 255, 255, 1.0)";
+    context.strokeStyle = "rgba(255, 255, 255, 0.3)";
+    context.lineWidth = fontSize * 0.07;
+    context.textBaseline = "middle";
+    context.textAlign = "center";
+
+    const x = width * 0.5;
+    const heightOfLines = lines.length * fontSize * 0.5;
+    lines.forEach((line, i) => {
+      const y = height * 0.5 - heightOfLines * 0.5 + i * fontSize;
+      context.fillText(line, x, y);
+      context.strokeText(line, x, y);
+    });
+
+    const data32 = new Uint32Array(
+      context.getImageData(0, 0, width, height).data.buffer
+    );
+    const dimension = Math.min(width, height);
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    for (let i = 0; i < data32.length; i++) {
+      const alpha = (data32[i] >> 24) & 0xff;
+      if (alpha) {
+        const alphaGroup = alpha === 255 ? 0 : 1;
+        particles[alphaGroup] = particles[alphaGroup] || [];
+        const densityFactor = density;
+        if (Math.random() < densityFactor) {
+          particles[alphaGroup].push(
+            new Particle({
+              x: i % width,
+              y: (i / width) | 0,
+              centerX,
+              centerY,
+              alpha,
+              dimension,
+            })
+          );
+        }
+      }
+    }
+    this.particlesStore[key] = particles;
+    return particles;
   }
 
   static shuffle(array) {
