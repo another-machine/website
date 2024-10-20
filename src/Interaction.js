@@ -23,7 +23,6 @@ export class Interaction {
     window.addEventListener("resize", this.onResize.bind(this));
     window.addEventListener("scroll", this.onScroll.bind(this));
     window.addEventListener("mousemove", this.onCursor.bind(this));
-    window.addEventListener("touchmove", this.onCursor.bind(this));
     this.onScroll();
   }
 
