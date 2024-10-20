@@ -14,12 +14,28 @@ export class Particles {
     this.groups.b.splice(0, this.groups.b.length);
 
     const particles = this.particlesForText(["a(nother)", "machine"]);
-    Particles.shuffle(particles);
     this.groups.a.push(...particles);
 
     this.groups.a.forEach((a, i) => {
       this.groups.b[i] = [...a];
       Particles.shuffle(this.groups.b[i]);
+    });
+  }
+
+  force(forcedParticles, scrollY) {
+    const size = Particle.radiusForProgress(scrollY);
+
+    this.groups.a.forEach((particles, i) => {
+      this.context.fillStyle = `rgba(255,255,255,${i ? 0.6 : 1})`;
+      this.context.beginPath();
+      const group = forcedParticles[i % forcedParticles.length];
+      particles.forEach((particle, j) => {
+        const destination = group[j % group.length];
+        particle.force({ destination });
+        particle.fill({ context: this.context, size });
+      });
+      this.context.closePath();
+      this.context.fill();
     });
   }
 
@@ -29,8 +45,6 @@ export class Particles {
     const offsetX = 0;
     const size = Particle.radiusForProgress(scrollY);
     const cursorRadius = Math.min(width, height) * 0.5;
-
-    this.context.lineWidth = Particle.dotRadiusMin * 0.01;
 
     this.groups.a.forEach((particles, i) => {
       this.context.fillStyle = `rgba(255,255,255,${i ? 0.6 : 1})`;
@@ -113,6 +127,7 @@ export class Particles {
         }
       }
     }
+    particles.forEach((group) => Particles.shuffle(group));
     this.particlesStore[key] = particles;
     return particles;
   }

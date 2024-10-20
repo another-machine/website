@@ -314,7 +314,7 @@
           <p>...or <em>amplib</em> for short.</p>
         </div>
         <div>
-          <p>
+          <p data-particles="DEVICES">
             <small
               ><a
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-devices"
@@ -322,7 +322,8 @@
               ></small
             ><br /><em>Motion, UserMedia, MIDI, and Orientation tools.</em>
           </p>
-          <p>
+
+          <p data-particles="LEXICON">
             <small
               ><a
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-lexicon"
@@ -330,7 +331,8 @@
               ></small
             ><br /><em>Topics and constraints for word based games.</em>
           </p>
-          <p>
+
+          <p data-particles="MUSIC DETECTION">
             <small
               ><a
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-music-detection"
@@ -338,7 +340,8 @@
               ></small
             ><br /><em>Real-time detection of music in audio streams.</em>
           </p>
-          <p>
+
+          <p data-particles="MUSIC THEORY">
             <small
               ><a
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-music-theory"
@@ -346,7 +349,8 @@
               ></small
             ><br /><em>Music notation and chromatic scale generation.</em>
           </p>
-          <p>
+
+          <p data-particles="PROCEDURAL GENERATION">
             <small
               ><a
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-procedural-generation"
@@ -354,7 +358,8 @@
               ></small
             ><br /><em>Time-based synchronization and seeded RNG.</em>
           </p>
-          <p>
+
+          <p data-particles="SOUND SYNTHESIS">
             <small
               ><a
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-sound-synthesis"
@@ -362,7 +367,8 @@
               ></small
             ><br /><em>Web oscillators.</em>
           </p>
-          <p>
+
+          <p data-particles="STEGANOGRAPHY">
             <small
               ><a
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-steganography"
@@ -381,7 +387,7 @@
         </div>
 
         <div>
-          <p>
+          <p data-particles="Lexicon Standoff">
             <small
               ><a
                 href="https://github.com/another-machine/public-library/tree/main/machines/lexicon-standoff"
@@ -389,7 +395,7 @@
               ></small
             ><br /><em>A party word game of hidden identities.</em>
           </p>
-          <p>
+          <p data-particles="Mindmeld">
             <small
               ><a
                 href="https://github.com/another-machine/public-library/tree/main/machines/mindmeld"
@@ -398,7 +404,7 @@
             ><br />
             <em>A two-person collaborative word game for idle time.</em>
           </p>
-          <p>
+          <p data-particles="Modulo">
             <small
               ><a
                 href="https://github.com/another-machine/public-library/tree/main/machines/modulo"
@@ -458,6 +464,8 @@
         context: noiseContext,
       });
 
+      let forceParticles;
+
       resizeCanvases();
 
       const oscillators = new Oscillators();
@@ -466,6 +474,13 @@
       const interaction = new Interaction({
         centerX: canvas.width / 2,
         centerY: canvas.height / 2,
+        onParticles: (text) => {
+          if (text) {
+            forceParticles = particles.particlesForText(text);
+          } else {
+            forceParticles = undefined;
+          }
+        },
         onResize: () => {
           if (
             canvas.width !== multipliedDimensions(window.innerWidth, 0).width
@@ -499,8 +514,12 @@
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         const calc = getComputedStyle(footer);
+        if (forceParticles) {
+          particles.force(forceParticles, computedToInt(calc.height, 0));
+        } else {
+          particles.render(interaction, computedToInt(calc.height, 0));
+        }
 
-        particles.render(interaction, computedToInt(calc.height, 0));
         oscillators.evolve(interaction);
         grainNoise.render(0.3);
       }

@@ -4,6 +4,7 @@ export class Interaction {
   cursorEase = 0.1;
 
   constructor({
+    onParticles,
     onResize,
     onScroll,
     centerX,
@@ -28,6 +29,12 @@ export class Interaction {
     this.toggleVisible.addEventListener("click", () => {
       this.toggleVisible.classList.toggle("active");
       onToggleVisible();
+    });
+    document.querySelectorAll("[data-particles]").forEach((a) => {
+      a.addEventListener("mouseenter", () =>
+        onParticles(a.getAttribute("data-particles").split(" "))
+      );
+      a.addEventListener("mouseleave", () => onParticles());
     });
     window.addEventListener("click", () => onClick());
     window.addEventListener("resize", this.onResize.bind(this));

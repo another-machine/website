@@ -1,7 +1,5 @@
 export class Particle {
   static PI2 = Math.PI * 2;
-  // static dotRadiusMax = 1;
-  // static dotRadiusMin = 0.6;
   static dotRadiusMax = 1.2;
   static dotRadiusMin = 0.8;
   static dotRadiusDiff = Particle.dotRadiusMax - Particle.dotRadiusMin;
@@ -23,13 +21,15 @@ export class Particle {
   midpoint = Math.random() * 0.5 + 0.375;
 
   radius = 0;
+  renderRadius = 0;
   renderX = 0;
   renderY = 0;
   returnSpeed = Math.random() * 0.05 + 0.025;
   rotateSpeed = Math.random() * 0.05 * 2;
 
   constructor({ x, y, centerX, centerY, alpha, dimension }) {
-    this.radiusBase = Math.random() * dimension * 0.1;
+    this.chaosRadius = Math.random() * dimension * 0.1;
+    this.radius = this.chaosRadius * 0.05;
     this.endX = centerX + (x - centerX) * 1.3;
     this.endY = centerY + (y - centerY) * 1.3;
 
@@ -56,7 +56,8 @@ export class Particle {
     offsetY,
   }) {
     const progressNormal = (Math.abs(progress - 0.5) / 0.5) * 0.9999 + 0.0001;
-    this.radius = (1 - progressNormal * 0.95) * this.radiusBase;
+    this.renderRadius =
+      (1 - progressNormal) * (this.chaosRadius - this.radius) + this.radius;
 
     const offset = Math.min(offsetX, offsetY);
     this.chaosX = this.foreignX * width + offset;
@@ -92,15 +93,27 @@ export class Particle {
       const influencedX = (this.x - cursorX) * pushStrength;
       const influencedY = (this.y - cursorY) * pushStrength;
 
+      const newX = this.x + influencedX;
+      const newY = this.y + influencedY;
+
       // Apply force to render positions
-      this.renderX = this.x + influencedX;
-      this.renderY = this.y + influencedY;
+      this.renderX = (newX - this.renderX) * this.returnSpeed + this.renderX;
+      this.renderY = (newY - this.renderY) * this.returnSpeed + this.renderY;
     }
   }
 
+  force({ destination }) {
+    this.renderX =
+      (destination.x - this.renderX) * this.returnSpeed + this.renderX;
+    this.renderY =
+      (destination.y - this.renderY) * this.returnSpeed + this.renderY;
+    this.renderRadius =
+      (this.radius - this.renderRadius) * this.returnSpeed + this.renderRadius;
+  }
+
   fill({ context, size }) {
-    const dx = Math.sin(this.angle * this.rotateSpeed) * this.radius;
-    const dy = Math.cos(this.angle * this.rotateSpeed) * this.radius;
+    const dx = Math.sin(this.angle * this.rotateSpeed) * this.renderRadius;
+    const dy = Math.cos(this.angle * this.rotateSpeed) * this.renderRadius;
     context.moveTo(this.renderX + dx, this.renderY + dy);
     context.arc(this.renderX + dx, this.renderY + dy, size, 0, Particle.PI2);
     this.angle += this.angleIncrement;
