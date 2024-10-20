@@ -167,15 +167,22 @@
       }
 
       canvas {
-        left: 50%;
+        left: 0;
         pointer-events: none;
         position: fixed;
-        top: 50%;
-        transform: translate(-50%, -50%);
+        top: 0;
         z-index: 0;
       }
       #canvas-main {
         background: #000;
+      }
+
+      footer {
+        top: 100lvh;
+        width: 100%;
+        height: calc(100lvh - 100svh);
+        background: black;
+        position: fixed;
       }
     </style>
   </head>
@@ -384,12 +391,17 @@
       </section>
     </main>
 
+    <footer></footer>
+
     <script type="module">
       import { GrainNoise } from "./src/GrainNoise.js";
       import { Interaction } from "./src/Interaction.js";
       import { Oscillators } from "./src/Oscillators.js";
       import { Particles } from "./src/Particles.js";
 
+      const aside = document.querySelector("aside");
+      const main = document.querySelector("main");
+      const footer = document.querySelector("footer");
       const canvas = document.getElementById("canvas-main");
       const context = canvas.getContext("2d");
       const noiseCanvas = document.getElementById("canvas-noise");
@@ -406,19 +418,24 @@
       particles.setup();
       const interaction = new Interaction({
         onResize: () => {
-          particles.setup();
+          if (canvas.width !== window.innerWidth) {
+            resizeCanvases();
+            particles.setup();
+          }
         },
         onClick: () => {
           oscillators.initialize();
         },
         onScroll: () => {
-          document.querySelector("aside").classList.add("subdued");
+          aside.classList.add("subdued");
         },
         onToggleSound: () => {
+          aside.classList.add("subdued");
           oscillators.toggle();
         },
         onToggleVisible: () => {
-          document.querySelector("main").classList.toggle("invisible");
+          aside.classList.add("subdued");
+          main.classList.toggle("invisible");
         },
         toggleSound: document.getElementById("sound"),
         toggleVisible: document.getElementById("visible"),
@@ -429,19 +446,27 @@
       function animate() {
         requestAnimationFrame(animate);
         context.clearRect(0, 0, canvas.width, canvas.height);
-        resizeCanvases(1);
-        particles.render(interaction);
+
+        const calc = getComputedStyle(footer);
+
+        particles.render(interaction, computedToInt(calc.height, 0));
         oscillators.evolve(interaction);
         grainNoise.render(window.innerWidth < 1024 ? 0.2 : 0.3);
       }
 
-      function resizeCanvases(increment = 1) {
+      function resizeCanvases() {
+        const calc = getComputedStyle(footer);
+        const height = computedToInt(calc.top, window.innerHeight);
         const width = window.innerWidth;
-        const height = window.innerHeight;
-        canvas.width = (width - canvas.width) * increment + canvas.width;
-        canvas.height = (height - canvas.height) * increment + canvas.height;
+        canvas.width = width - canvas.width + canvas.width;
+        canvas.height = height - canvas.height + canvas.height;
         noiseCanvas.width = canvas.width;
         noiseCanvas.height = canvas.height;
+      }
+
+      function computedToInt(string, fallback) {
+        const match = string.match(/\d+/);
+        return match ? parseInt(match[0]) : fallback;
       }
     </script>
   </body>

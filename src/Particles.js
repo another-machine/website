@@ -63,11 +63,10 @@ export class Particles {
     });
   }
 
-  render({ cursorX, cursorY, scrollY }) {
-    const width = this.canvas.width * 1;
-    const height = this.canvas.height * 1;
-    const offsetX = this.canvas.width * 0;
-    const offsetY = this.canvas.height * 0;
+  render({ cursorX, cursorY, scrollY }, offsetY) {
+    const width = this.canvas.width;
+    const height = this.canvas.height;
+    const offsetX = 0;
     const size = Particle.radiusForProgress(scrollY);
     const cursorRadius = Math.min(width, height) * 0.5;
 
