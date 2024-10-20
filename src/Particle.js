@@ -1,7 +1,9 @@
 export class Particle {
   static PI2 = Math.PI * 2;
-  static dotRadiusMax = 1;
-  static dotRadiusMin = 0.6;
+  // static dotRadiusMax = 1;
+  // static dotRadiusMin = 0.6;
+  static dotRadiusMax = 1.2;
+  static dotRadiusMin = 0.8;
   static dotRadiusDiff = Particle.dotRadiusMax - Particle.dotRadiusMin;
 
   static radiusForProgress(progress) {

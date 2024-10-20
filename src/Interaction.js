@@ -1,25 +1,35 @@
 export class Interaction {
-  cursorX = window.innerWidth / 2;
-  cursorY = window.innerHeight / 2;
   scrollY = 0;
   scrollEase = 2;
   cursorEase = 0.1;
 
-  constructor(props = {}) {
-    this._onResize = props.onResize;
-    this._onScroll = props.onScroll;
-    this.toggleSound = props.toggleSound;
+  constructor({
+    onResize,
+    onScroll,
+    centerX,
+    centerY,
+    toggleSound,
+    onToggleSound,
+    toggleVisible,
+    onToggleVisible,
+    onClick,
+  }) {
+    this._onResize = onResize;
+    this._onScroll = onScroll;
+    this.cursorX = centerX;
+    this.cursorY = centerY;
+    this.toggleSound = toggleSound;
     this.toggleSound.addEventListener("click", (e) => {
       e.stopPropagation();
       this.toggleSound.classList.toggle("active");
-      props.onToggleSound();
+      onToggleSound();
     });
-    this.toggleVisible = props.toggleVisible;
+    this.toggleVisible = toggleVisible;
     this.toggleVisible.addEventListener("click", () => {
       this.toggleVisible.classList.toggle("active");
-      props.onToggleVisible();
+      onToggleVisible();
     });
-    window.addEventListener("click", () => props.onClick());
+    window.addEventListener("click", () => onClick());
     window.addEventListener("resize", this.onResize.bind(this));
     window.addEventListener("scroll", this.onScroll.bind(this));
     window.addEventListener("mousemove", this.onCursor.bind(this));

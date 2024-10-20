@@ -167,10 +167,12 @@
       }
 
       canvas {
+        height: auto;
         left: 0;
         pointer-events: none;
         position: fixed;
         top: 0;
+        width: 100%;
         z-index: 0;
       }
       #canvas-main {
@@ -417,8 +419,12 @@
       const particles = new Particles({ canvas, context });
       particles.setup();
       const interaction = new Interaction({
+        centerX: canvas.width / 2,
+        centerY: canvas.height / 2,
         onResize: () => {
-          if (canvas.width !== window.innerWidth) {
+          if (
+            canvas.width !== multipliedDimensions(window.innerWidth, 0).width
+          ) {
             resizeCanvases();
             particles.setup();
           }
@@ -451,13 +457,15 @@
 
         particles.render(interaction, computedToInt(calc.height, 0));
         oscillators.evolve(interaction);
-        grainNoise.render(window.innerWidth < 1024 ? 0.2 : 0.3);
+        grainNoise.render(window.innerWidth < 1024 ? 0 : 0.3);
       }
 
       function resizeCanvases() {
         const calc = getComputedStyle(footer);
-        const height = computedToInt(calc.top, window.innerHeight);
-        const width = window.innerWidth;
+        const { width, height } = multipliedDimensions(
+          window.innerWidth,
+          computedToInt(calc.top, window.innerHeight)
+        );
         canvas.width = width - canvas.width + canvas.width;
         canvas.height = height - canvas.height + canvas.height;
         noiseCanvas.width = canvas.width;
@@ -467,6 +475,14 @@
       function computedToInt(string, fallback) {
         const match = string.match(/\d+/);
         return match ? parseInt(match[0]) : fallback;
+      }
+
+      function multipliedDimensions(width, height) {
+        const multiplier = width < 1024 ? 2 : 1.1;
+        return {
+          width: Math.round(width * multiplier),
+          height: Math.round(height * multiplier),
+        };
       }
     </script>
   </body>
