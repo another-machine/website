@@ -66,10 +66,6 @@
           opacity: 0.125;
         }
 
-        &:hover {
-          opacity: 1;
-        }
-
         > button {
           appearance: none;
           background: 0;
@@ -99,6 +95,12 @@
         }
       }
 
+      @media (hover: hover) and (pointer: fine) {
+        aside:hover {
+          opacity: 1;
+        }
+      }
+
       main {
         position: relative;
         transition: opacity 150ms ease-in-out;
@@ -116,7 +118,7 @@
         flex-direction: column;
         justify-content: center;
         gap: 60svh;
-        padding: 120svh 2rem;
+        padding: 120lvh 2rem;
 
         > * {
           align-items: center;

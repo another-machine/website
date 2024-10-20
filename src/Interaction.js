@@ -45,12 +45,7 @@ export class Interaction {
     if (!this._onResize) {
       return;
     }
-    if (this.resizeTimeout) {
-      clearTimeout(this.resizeTimeout);
-    }
-    this.resizeTimeout = setTimeout(() => {
-      this._onResize();
-    }, 50);
+    this._onResize();
   }
 
   onScroll(args) {
