@@ -20,13 +20,13 @@ export class Oscillator {
   volume = 1 / 100;
   chance = 0.3 + Math.random() * 0.7;
 
-  constructor(context) {
+  constructor(context, output) {
     this.context = context;
-    this.createOscillator();
+    this.createOscillator(output);
     this.isPlaying = false;
   }
 
-  createOscillator() {
+  createOscillator(output) {
     const real = Oscillator.randomReal();
     const imag = new Float32Array(real.length);
     const waveform = this.context.createPeriodicWave(real, imag);
@@ -40,7 +40,7 @@ export class Oscillator {
 
     this.oscillatorNode.connect(this.panNode);
     this.panNode.connect(this.gainNode);
-    this.gainNode.connect(this.context.destination);
+    this.gainNode.connect(output);
   }
 
   static randomReal() {

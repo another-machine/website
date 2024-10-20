@@ -6,21 +6,25 @@ export class Interaction {
   cursorEase = 0.1;
 
   constructor(props = {}) {
-    this._onClick = props.onClick;
     this._onResize = props.onResize;
-    window.addEventListener("click", this.onClick.bind(this));
+    this._onScroll = props.onScroll;
+    this.toggleSound = props.toggleSound;
+    this.toggleSound.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.toggleSound.classList.toggle("active");
+      props.onToggleSound();
+    });
+    this.toggleVisible = props.toggleVisible;
+    this.toggleVisible.addEventListener("click", () => {
+      this.toggleVisible.classList.toggle("active");
+      props.onToggleVisible();
+    });
+    window.addEventListener("click", () => props.onClick());
     window.addEventListener("resize", this.onResize.bind(this));
     window.addEventListener("scroll", this.onScroll.bind(this));
     window.addEventListener("mousemove", this.onCursor.bind(this));
     window.addEventListener("touchmove", this.onCursor.bind(this));
     this.onScroll();
-  }
-
-  onClick() {
-    if (!this._onClick) {
-      return;
-    }
-    this._onClick();
   }
 
   onCursor({ clientX, clientY }) {
@@ -40,12 +44,15 @@ export class Interaction {
     }, 200);
   }
 
-  onScroll() {
+  onScroll(args) {
     const documentHeight = document.documentElement.scrollHeight;
     const windowHeight = window.innerHeight;
     const rawScrollPosition =
       document.documentElement.scrollTop / (documentHeight - windowHeight);
     this.scrollY = this.easeInOut(rawScrollPosition);
+    if (args && this._onScroll) {
+      this._onScroll(this.scrollY);
+    }
   }
 
   easeInOut(t) {
