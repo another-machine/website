@@ -457,7 +457,7 @@
 
         particles.render(interaction, computedToInt(calc.height, 0));
         oscillators.evolve(interaction);
-        grainNoise.render(window.innerWidth < 1024 ? 0 : 0.3);
+        grainNoise.render(0.3);
       }
 
       function resizeCanvases() {
