@@ -40,7 +40,7 @@ export class Interaction {
     }
     this.resizeTimeout = setTimeout(() => {
       this._onResize();
-    }, 200);
+    }, 50);
   }
 
   onScroll(args) {

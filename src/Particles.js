@@ -14,7 +14,7 @@ export class Particles {
     const height = this.canvas.height;
     const width = this.canvas.width;
     const fontSize = Math.min(height, width) * 0.15;
-    const density = Math.max((0.2 / 200) * fontSize, 0.2);
+    const density = Math.max((0.2 / 200) * fontSize, 0.25);
 
     this.context.clearRect(0, 0, width, height);
     this.context.font = `${fontSize}px Times New Roman`;
@@ -68,7 +68,6 @@ export class Particles {
     const height = this.canvas.height * 1;
     const offsetX = this.canvas.width * 0;
     const offsetY = this.canvas.height * 0;
-    const relativeProgress = Math.abs(scrollY - 0.5) / 0.5;
     const size = Particle.radiusForProgress(scrollY);
     const cursorRadius = Math.min(width, height) * 0.5;
 
