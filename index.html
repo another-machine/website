@@ -109,6 +109,7 @@
 
         &.invisible {
           opacity: 0;
+          z-index: -1;
         }
       }
 
@@ -176,7 +177,6 @@
       canvas {
         height: auto;
         left: 0;
-        pointer-events: none;
         position: fixed;
         top: 0;
         width: 100%;
@@ -184,6 +184,9 @@
       }
       #canvas-main {
         background: #000;
+      }
+      #canvas-noise {
+        pointer-events: none;
       }
 
       footer {
@@ -475,7 +478,7 @@
         centerX: canvas.width / 2,
         centerY: canvas.height / 2,
         onParticles: (text) => {
-          if (text) {
+          if (text && !main.classList.contains("invisible")) {
             forceParticles = particles.particlesForText(text);
           } else {
             forceParticles = undefined;
@@ -493,6 +496,7 @@
           oscillators.initialize();
         },
         onScroll: () => {
+          forceParticles = undefined;
           aside.classList.add("subdued");
         },
         onToggleSound: () => {
@@ -521,7 +525,7 @@
         }
 
         oscillators.evolve(interaction);
-        grainNoise.render(0.3);
+        grainNoise.render(0.4);
       }
 
       function resizeCanvases() {

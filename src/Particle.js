@@ -24,7 +24,7 @@ export class Particle {
   renderRadius = 0;
   renderX = 0;
   renderY = 0;
-  returnSpeed = Math.random() * 0.05 + 0.025;
+  returnSpeed = Math.random() * 0.06 + 0.015;
   rotateSpeed = Math.random() * 0.05 * 2;
 
   constructor({ x, y, centerX, centerY, alpha, dimension }) {
@@ -79,15 +79,18 @@ export class Particle {
     const distToCursor = Math.sqrt(
       (cursorX - this.x) ** 2 + (cursorY - this.y) ** 2
     );
-    const effectiveCursorRadius = cursorRadius * (1 - progressNormal); // Ensure it's at least 1
+    const effectiveCursorRadius = cursorRadius * (1 - progressNormal);
 
     // Gradually return to the original position if the cursor is not close
     if (distToCursor > effectiveCursorRadius) {
       this.renderX += (this.x - this.renderX) * this.returnSpeed;
       this.renderY += (this.y - this.renderY) * this.returnSpeed;
     } else {
-      const normalizedDist = Math.min(distToCursor / effectiveCursorRadius, 1); // Normalize distance
-      const pushStrength = Math.pow(1 - normalizedDist, 3); // Cubic function for a stronger push effect
+      const normalizedDistance = Math.min(
+        distToCursor / effectiveCursorRadius,
+        1
+      );
+      const pushStrength = Math.pow(normalizedDistance, 0.5);
 
       // Calculate offsets based on cursor position and push strength
       const influencedX = (this.x - cursorX) * pushStrength;

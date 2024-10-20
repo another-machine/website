@@ -31,7 +31,7 @@ export class Interaction {
       onToggleVisible();
     });
     document.querySelectorAll("[data-particles]").forEach((a) => {
-      a.addEventListener("mouseenter", () =>
+      a.addEventListener("mousemove", () =>
         onParticles(a.getAttribute("data-particles").split(" "))
       );
       a.addEventListener("mouseleave", () => onParticles());
