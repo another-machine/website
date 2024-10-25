@@ -28,13 +28,11 @@
     <style>
       :root {
         --font-size: 1.6rem;
-        --noise-filter: blur(0);
       }
 
       @media (min-width: 1024px) {
         :root {
           --font-size: 5rem;
-          --noise-filter: url(#noise-filter-large);
         }
       }
 
@@ -199,29 +197,6 @@
     </style>
   </head>
   <body>
-    <svg width="0" height="0" style="position: absolute">
-      <defs>
-        <filter id="noise-filter-small">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.9"
-            numOctaves="2"
-            result="noise"
-          ></feTurbulence>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" />
-        </filter>
-        <filter id="noise-filter-large">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="1.0"
-            numOctaves="2"
-            result="noise"
-          ></feTurbulence>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" />
-        </filter>
-      </defs>
-    </svg>
-
     <canvas id="canvas-main"></canvas>
     <canvas id="canvas-noise"></canvas>
 
