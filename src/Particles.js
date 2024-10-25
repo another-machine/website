@@ -79,7 +79,7 @@ export class Particles {
     const particles = [];
     const height = this.canvas.height;
     const width = this.canvas.width;
-    const fontSize = Math.min(height, width) * 0.15;
+    const fontSize = Math.min(170, Math.min(height, width) * 0.15);
     const density = Math.max((0.2 / 200) * fontSize, 0.25);
 
     canvas.width = width;
