@@ -59,7 +59,12 @@ export class Interaction {
     if (!this._onResize) {
       return;
     }
-    this._onResize();
+    if (this._resizeTimeout) {
+      clearTimeout(this._resizeTimeout);
+    }
+    this._resizeTimeout = setTimeout(() => {
+      this._onResize();
+    }, 100);
   }
 
   onScroll(args) {

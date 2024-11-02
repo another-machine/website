@@ -506,8 +506,17 @@
           }
         },
         onResize: () => {
+          const height = canvas.height;
+          const width = canvas.width;
           resizeCanvases();
-          particles.setup();
+          const calc = getComputedStyle(footer);
+          if (
+            width === canvas.width &&
+            Math.abs(height - canvas.height) < computedToInt(calc.height, 0) + 2
+          ) {
+          } else {
+            particles.setup();
+          }
         },
         onClick: () => {
           oscillators.initialize();
