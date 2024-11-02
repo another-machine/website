@@ -301,7 +301,7 @@
               ><a
                 data-particles="DEVICES"
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-devices"
-                >amplib/devices</a
+                >devices</a
               ></small
             ><br /><em>Motion, UserMedia, MIDI, and Orientation tools.</em>
           </p>
@@ -311,7 +311,7 @@
               ><a
                 data-particles="LEXICON"
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-lexicon"
-                >amplib/lexicon</a
+                >lexicon</a
               ></small
             ><br /><em>Topics and constraints for word based games.</em>
           </p>
@@ -321,7 +321,7 @@
               ><a
                 data-particles="MUSIC DETECTION"
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-music-detection"
-                >amplib/music-detection</a
+                >music-detection</a
               ></small
             ><br /><em>Real-time detection of music in audio streams.</em>
           </p>
@@ -331,7 +331,7 @@
               ><a
                 data-particles="MUSIC THEORY"
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-music-theory"
-                >amplib/music-theory</a
+                >music-theory</a
               ></small
             ><br /><em>Music notation and chromatic scale generation.</em>
           </p>
@@ -341,7 +341,7 @@
               ><a
                 data-particles="PROCEDURAL GENERATION"
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-procedural-generation"
-                >amplib/procedural-generation</a
+                >procedural-generation</a
               ></small
             ><br /><em>Time-based synchronization and seeded RNG.</em>
           </p>
@@ -351,7 +351,7 @@
               ><a
                 data-particles="SOUND SYNTHESIS"
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-sound-synthesis"
-                >amplib/sound-synthesis</a
+                >sound-synthesis</a
               ></small
             ><br /><em>Web oscillators.</em>
           </p>
@@ -361,7 +361,7 @@
               ><a
                 data-particles="STEGANOGRAPHY"
                 href="https://github.com/another-machine/public-library/tree/main/packages/amplib-steganography"
-                >amplib/steganography</a
+                >steganography</a
               ></small
             ><br /><em>Encoding and decoding data in image pixels.</em>
           </p>
@@ -474,7 +474,7 @@
 
     <script type="module">
       import { GrainNoise } from "./src/GrainNoise.js";
-      import { Interaction } from "./src/Interaction.js";
+      import { Interaction } from "./src/Interaction.js?asdf";
       import { Oscillators } from "./src/Oscillators.js";
       import { Particles } from "./src/Particles.js";
 
@@ -491,15 +491,13 @@
       });
 
       let forceParticles;
-
       resizeCanvases();
 
       const oscillators = new Oscillators();
       const particles = new Particles({ canvas, context });
       particles.setup();
       const interaction = new Interaction({
-        centerX: canvas.width / 2,
-        centerY: canvas.height / 2,
+        canvas,
         onParticles: (text) => {
           if (text && !main.classList.contains("invisible")) {
             forceParticles = particles.particlesForText(text);
@@ -508,12 +506,8 @@
           }
         },
         onResize: () => {
-          if (
-            canvas.width !== multipliedDimensions(window.innerWidth, 0).width
-          ) {
-            resizeCanvases();
-            particles.setup();
-          }
+          resizeCanvases();
+          particles.setup();
         },
         onClick: () => {
           oscillators.initialize();

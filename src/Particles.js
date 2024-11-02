@@ -1,31 +1,42 @@
+import { ParticlePool } from "./ParticlePool.js";
 import { Particle } from "./Particle.js";
 
 export class Particles {
-  groups = { a: [], b: [] };
-  particlesStore = {};
+  particleGroups = { start: [], end: [] };
+  // Increase initial pool size to avoid particle creation during runtime
+  particlePool = new ParticlePool(5000); // Adjust based on your needs
 
   constructor({ canvas, context }) {
     this.canvas = canvas;
     this.context = context;
+    // Pre-allocate temporary arrays for better performance
+    this.tempArray = new Float32Array(2);
   }
 
   setup() {
-    this.groups.a.splice(0, this.groups.a.length);
-    this.groups.b.splice(0, this.groups.b.length);
+    this.particlePool.releaseAll([
+      ...this.particleGroups.start,
+      ...this.particleGroups.end,
+    ]);
+
+    this.particleGroups.start.length = 0;
+    this.particleGroups.end.length = 0;
 
     const particles = this.particlesForText(["a(nother)", "machine"]);
-    this.groups.a.push(...particles);
+    this.particleGroups.start.push(...particles);
 
-    this.groups.a.forEach((a, i) => {
-      this.groups.b[i] = [...a];
-      Particles.shuffle(this.groups.b[i]);
+    // Create end groups more efficiently
+    particles.forEach((startGroup, i) => {
+      const endGroup = startGroup.slice();
+      Particles.shuffle(endGroup);
+      this.particleGroups.end[i] = endGroup;
     });
   }
 
   force(forcedParticles, scrollY) {
     const size = Particle.radiusForProgress(scrollY);
 
-    this.groups.a.forEach((particles, i) => {
+    this.particleGroups.start.forEach((particles, i) => {
       this.context.fillStyle = `rgba(255,255,255,${i ? 0.6 : 1})`;
       this.context.beginPath();
       const group = forcedParticles[i % forcedParticles.length];
@@ -46,11 +57,11 @@ export class Particles {
     const size = Particle.radiusForProgress(scrollY);
     const cursorRadius = Math.min(width, height) * 0.5;
 
-    this.groups.a.forEach((particles, i) => {
+    this.particleGroups.start.forEach((particles, i) => {
       this.context.fillStyle = `rgba(255,255,255,${i ? 0.6 : 1})`;
       this.context.beginPath();
       particles.forEach((particle, j) => {
-        const destination = this.groups.b[i][j];
+        const destination = this.particleGroups.end[i][j];
         particle.evolve({
           progress: scrollY,
           cursorX,
@@ -70,16 +81,12 @@ export class Particles {
   }
 
   particlesForText(lines) {
-    const key = [...lines, this.canvas.width, this.canvas.height].join("-");
-    if (this.particlesStore[key]) {
-      return this.particlesStore[key];
-    }
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     const particles = [];
     const height = this.canvas.height;
     const width = this.canvas.width;
-    const fontSize = Math.min(170, Math.min(height, width) * 0.15);
+    const fontSize = Math.min(170, Math.min(height, width) * 0.1);
     const density = Math.max((0.2 / 200) * fontSize, 0.25);
 
     canvas.width = width;
@@ -114,21 +121,20 @@ export class Particles {
         particles[alphaGroup] = particles[alphaGroup] || [];
         const densityFactor = density;
         if (Math.random() < densityFactor) {
-          particles[alphaGroup].push(
-            new Particle({
-              x: i % width,
-              y: (i / width) | 0,
-              centerX,
-              centerY,
-              alpha,
-              dimension,
-            })
-          );
+          const particle = this.particlePool.acquire({
+            x: i % width,
+            y: (i / width) | 0,
+            centerX,
+            centerY,
+            alpha,
+            dimension,
+          });
+          particles[alphaGroup].push(particle);
         }
       }
     }
+
     particles.forEach((group) => Particles.shuffle(group));
-    this.particlesStore[key] = particles;
     return particles;
   }
 

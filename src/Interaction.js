@@ -4,21 +4,21 @@ export class Interaction {
   cursorEase = 0.1;
 
   constructor({
+    canvas,
     onParticles,
     onResize,
     onScroll,
-    centerX,
-    centerY,
     toggleSound,
     onToggleSound,
     toggleVisible,
     onToggleVisible,
     onClick,
   }) {
+    this.canvas = canvas;
     this._onResize = onResize;
     this._onScroll = onScroll;
-    this.cursorX = centerX;
-    this.cursorY = centerY;
+    this._cursorX = window.innerWidth / 2;
+    this._cursorY = window.innerHeight / 2;
     this.toggleSound = toggleSound;
     this.toggleSound.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -31,7 +31,7 @@ export class Interaction {
       onToggleVisible();
     });
     document.querySelectorAll("[data-particles]").forEach((a) => {
-      a.addEventListener("mousemove", () =>
+      a.addEventListener("mouseenter", () =>
         onParticles(a.getAttribute("data-particles").split(" "))
       );
       a.addEventListener("mouseleave", () => onParticles());
@@ -43,9 +43,16 @@ export class Interaction {
     this.onScroll();
   }
 
+  get cursorX() {
+    return this._cursorX * (this.canvas.width / window.innerWidth);
+  }
+  get cursorY() {
+    return this._cursorY * (this.canvas.height / window.innerHeight);
+  }
+
   onCursor({ clientX, clientY }) {
-    this.cursorX += (clientX - this.cursorX) * this.cursorEase;
-    this.cursorY += (clientY - this.cursorY) * this.cursorEase;
+    this._cursorX += (clientX - this._cursorX) * this.cursorEase;
+    this._cursorY += (clientY - this._cursorY) * this.cursorEase;
   }
 
   onResize() {
