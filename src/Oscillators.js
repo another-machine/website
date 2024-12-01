@@ -1,4 +1,4 @@
-import { Oscillator } from "./Oscillator.js";
+import { COUNT, Oscillator } from "./Oscillator.js";
 
 export class Oscillators {
   initialized = false;
@@ -7,28 +7,32 @@ export class Oscillators {
     this.oscillators = [];
   }
 
-  initialize() {
+  initialize(interaction) {
     if (this.initialized) {
       return;
     }
     this.initialized = true;
     this.context = new AudioContext();
     this.gainNode = new GainNode(this.context);
-    this.gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime);
+    this.gainNode.gain.setValueAtTime(0, this.context.currentTime);
     this.gainNode.connect(this.context.destination);
-    for (let i = 0; i < 100; i++) {
-      this.oscillators.push(new Oscillator(this.context, this.gainNode));
+    const count = COUNT * 8;
+    for (let i = 0; i < count; i++) {
+      const oscillator = new Oscillator(
+        this.context,
+        this.gainNode,
+        1 / (count * 0.9),
+        interaction.scrollY
+      );
+      this.oscillators.push(oscillator);
+      oscillator.evolve(interaction.scrollY);
+      oscillator.start();
     }
-    this.oscillators.forEach((oscillator) => oscillator.start());
   }
 
   start() {
-    if (!this.initialized) {
-      this.initialize();
-    }
-    this.on = true;
-    this.gainNode.gain.setValueAtTime(0.000001, this.context.currentTime);
     this.gainNode.gain.linearRampToValueAtTime(1, this.context.currentTime + 1);
+    this.on = true;
   }
 
   stop() {
@@ -40,10 +44,11 @@ export class Oscillators {
     this.gainNode.gain.setValueAtTime(0, this.context.currentTime + 1.01);
   }
 
-  toggle() {
+  toggle(interaction) {
     if (this.on) {
       this.stop();
     } else {
+      this.initialize(interaction);
       this.start();
     }
   }

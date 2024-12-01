@@ -3,13 +3,11 @@ import { Particle } from "./Particle.js";
 
 export class Particles {
   particleGroups = { start: [], end: [] };
-  // Increase initial pool size to avoid particle creation during runtime
-  particlePool = new ParticlePool(5000); // Adjust based on your needs
+  particlePool = new ParticlePool(5000);
 
   constructor({ canvas, context }) {
     this.canvas = canvas;
     this.context = context;
-    // Pre-allocate temporary arrays for better performance
     this.tempArray = new Float32Array(2);
   }
 
