@@ -10,8 +10,6 @@ export class Interaction {
     onScroll,
     toggleSound,
     onToggleSound,
-    toggleVisible,
-    onToggleVisible,
     onClick,
   }) {
     this.canvas = canvas;
@@ -24,11 +22,6 @@ export class Interaction {
       e.stopPropagation();
       this.toggleSound.classList.toggle("active");
       onToggleSound();
-    });
-    this.toggleVisible = toggleVisible;
-    this.toggleVisible.addEventListener("click", () => {
-      this.toggleVisible.classList.toggle("active");
-      onToggleVisible();
     });
     document.querySelectorAll("[data-particles]").forEach((a) => {
       a.addEventListener("mouseenter", () =>

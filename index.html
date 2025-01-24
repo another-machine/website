@@ -57,6 +57,7 @@
       aside {
         display: flex;
         gap: 0.5rem;
+        padding: 0.5rem;
         position: fixed;
         right: 2rem;
         top: 2rem;
@@ -197,11 +198,9 @@
   </head>
   <body>
     <canvas id="canvas-main"></canvas>
-    <canvas id="canvas-noise"></canvas>
 
     <aside>
       <button id="sound" class="opacity">&#9654;</button>
-      <button id="visible">Aa</button>
     </aside>
 
     <main>
@@ -440,8 +439,7 @@
     <footer></footer>
 
     <script type="module">
-      import { GrainNoise } from "./src/GrainNoise.js";
-      import { Interaction } from "./src/Interaction.js?asdf";
+      import { Interaction } from "./src/Interaction.js";
       import { Oscillators } from "./src/Oscillators.js";
       import { Particles } from "./src/Particles.js";
 
@@ -450,12 +448,6 @@
       const footer = document.querySelector("footer");
       const canvas = document.getElementById("canvas-main");
       const context = canvas.getContext("2d");
-      const noiseCanvas = document.getElementById("canvas-noise");
-      const noiseContext = noiseCanvas.getContext("2d");
-      const grainNoise = new GrainNoise({
-        canvas: noiseCanvas,
-        context: noiseContext,
-      });
 
       let forceParticles;
       resizeCanvases();
@@ -496,12 +488,7 @@
           aside.classList.add("subdued");
           oscillators.toggle(interaction);
         },
-        onToggleVisible: () => {
-          aside.classList.add("subdued");
-          main.classList.toggle("invisible");
-        },
         toggleSound: document.getElementById("sound"),
-        toggleVisible: document.getElementById("visible"),
       });
 
       animate();
@@ -518,7 +505,6 @@
         }
 
         oscillators.evolve(interaction);
-        grainNoise.render(0.35);
       }
 
       function resizeCanvases() {
@@ -529,8 +515,6 @@
         );
         canvas.width = width - canvas.width + canvas.width;
         canvas.height = height - canvas.height + canvas.height;
-        noiseCanvas.width = canvas.width;
-        noiseCanvas.height = canvas.height;
       }
 
       function computedToInt(string, fallback) {
