@@ -20,7 +20,7 @@ export class Particles {
     this.particleGroups.start.length = 0;
     this.particleGroups.end.length = 0;
 
-    const particles = this.particlesForText(["a(nother)", "machine"]);
+    const particles = this.particlesForText(["another", "machine"]);
     this.particleGroups.start.push(...particles);
 
     // Create end groups more efficiently
