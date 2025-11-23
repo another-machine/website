@@ -56,17 +56,10 @@
 
       aside {
         display: flex;
-        gap: 0.5rem;
-        padding: 0.5rem;
         position: fixed;
         right: 2rem;
         top: 2rem;
-        transition: opacity 150ms ease-in-out;
         z-index: 99;
-
-        &.subdued {
-          opacity: 0.125;
-        }
 
         > button {
           appearance: none;
@@ -74,17 +67,15 @@
           border: 0;
           color: white;
           cursor: pointer;
-          padding: 0;
+          font-size: 1.5rem;
+          padding: 0.5rem;
+          transition: opacity 150ms ease-in-out;
           text-decoration: none;
 
-          &.opacity {
-            &:not(.subdued) {
-              opacity: 0.25;
+          opacity: 0.125;
 
-              &.active {
-                opacity: 1;
-              }
-            }
+          &.active {
+            opacity: 0.6;
           }
 
           &.active:not(.opacity) {
@@ -94,7 +85,7 @@
       }
 
       @media (hover: hover) and (pointer: fine) {
-        aside:hover {
+        aside button:hover {
           opacity: 1;
         }
       }
